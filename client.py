@@ -1,5 +1,17 @@
 import os
 import socket
+import sys
+import time
+
+# This part adds the progress bar to my program
+from tqdm import tqdm
+
+total = 100
+
+with tqdm(total=total) as pbar:
+    for i in range(total):
+        time.sleep(0.1)
+        pbar.update(1)
 
 IP = "127.0.0.1"
 PORT = 4456
@@ -63,5 +75,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-# test
