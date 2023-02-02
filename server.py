@@ -7,6 +7,7 @@ SIZE = 1024
 FORMAT = "utf"
 SERVER_FOLDER = "server_folder"
 
+
 def main():
     print("[STARTING] Server is starting.\n")
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -60,3 +61,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+#Codes were taken from various youtube video, online resources, self R&D and ChatGPT
