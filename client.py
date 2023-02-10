@@ -37,6 +37,12 @@ def main():
     # Receive the authentication result
     msg = client.recv(SIZE).decode(FORMAT)
     print(f"[SERVER] {msg}")
+    while True:
+        msg = client.recv(SIZE).decode(FORMAT)
+        if not msg:
+            print("[ERROR] Connection with the client closed.")
+            break
+        cmd, data = msg.split(":")
 
     if msg == "Authentication successful.":
         """ The rest of the file transfer code """
@@ -78,6 +84,7 @@ def main():
         #Recieve the reply from the server
         msg = client.recv(SIZE).decode(FORMAT)
         print(f"[SERVER] {msg}")
+        
 
         #Send the data
         file = open(os.path.join(path, file_name), "r")
@@ -87,12 +94,15 @@ def main():
         client.send(msg.encode(FORMAT))
         msg = client.recv(SIZE).decode(FORMAT)
         print(f"[SERVER] {msg}")
-
+        
         #Sending the close command
         msg = f"FINISH:Complete data send"
         client.send(msg.encode(FORMAT))
         msg = client.recv(SIZE).decode(FORMAT)
         print(f"[SERVER] {msg}")
+
+
+        
 
         # Adding transfer history
         with open("transfer_history_log.txt", "a") as f:
@@ -106,3 +116,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+

@@ -2,6 +2,8 @@ import os
 import socket
 import sys
 import csv
+import socket
+import time
 
 IP = "127.0.0.1"
 PORT = 4456
@@ -41,6 +43,17 @@ def main():
                 conn.send("Authentication failed.".encode(FORMAT))
                 print(f"[AUTHENTICATION] {username} authentication failed.")
 
+            # set a timeout of 5 seconds for the receive operation
+            conn.settimeout(5)
+            try:
+                username = conn.recv(SIZE).decode(FORMAT)
+                password = conn.recv(SIZE).decode(FORMAT)
+            except socket.timeout:
+                # if the receive operation takes too long, close the connection
+                print("[ERROR] Connection timed out.")
+                conn.close()
+                break
+
         """ Receiving the folder_name """
         folder_name = conn.recv(SIZE).decode(FORMAT)
 
@@ -79,6 +92,16 @@ def main():
             elif cmd == "CLOSE":
                 conn.close()
                 print(f"[CLIENT] {data}")
+                break
+
+            # set a timeout of 5 seconds for the receive operation
+            conn.settimeout(5)
+            try:
+                msg = conn.recv(SIZE).decode(FORMAT)
+            except socket.timeout:
+                # if the receive operation takes too long, close the connection
+                print("[ERROR] Connection timed out.")
+                conn.close()
                 break
 
 
