@@ -1,11 +1,16 @@
 import os
 import socket
+import sys
+import csv
 
 IP = "127.0.0.1"
 PORT = 4456
 SIZE = 1024
 FORMAT = "utf"
 SERVER_FOLDER = "server_folder"
+
+# # Create a dictionary to store usernames and passwords
+user_data = {"user1": "pass1", "user2": "pass2", "pass": "pass", "try": "try"}
 
 
 def main():
@@ -18,6 +23,23 @@ def main():
     while True:
         conn, addr = server.accept()
         print(f"[NEW CONNECTION] {addr} connected.\n")
+
+        # Authenticate the user
+        authenticated = False
+        while not authenticated:
+            # Receive the username and password
+            username = conn.recv(SIZE).decode(FORMAT)
+            password = conn.recv(SIZE).decode(FORMAT)
+
+            # Check if the username and password match
+            if username in user_data and user_data[username] == password:
+                authenticated = True
+                conn.send("Authentication successful.".encode(FORMAT))
+                print(
+                    f"[AUTHENTICATION] {username} successfully authenticated.")
+            else:
+                conn.send("Authentication failed.".encode(FORMAT))
+                print(f"[AUTHENTICATION] {username} authentication failed.")
 
         """ Receiving the folder_name """
         folder_name = conn.recv(SIZE).decode(FORMAT)
@@ -59,8 +81,6 @@ def main():
                 print(f"[CLIENT] {data}")
                 break
 
+
 if __name__ == "__main__":
     main()
-
-
-#Codes were taken from various youtube video, online resources, self R&D and ChatGPT

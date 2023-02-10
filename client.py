@@ -1,27 +1,18 @@
+from tqdm import tqdm
 import os
 import socket
 import sys
 import time
 import datetime
 
-#lets add a password
+# #lets add a password
 
-password = input("Enter the password to start transferring: ")
-if password == "secret":
-    # code to transfer the file
-    print("File transfer successful")
-else:
-    print("Incorrect password. File transfer failed.")
-
-# This part adds the progress bar to my program
-from tqdm import tqdm
-
-total = 100
-
-with tqdm(total=total) as pbar:
-    for i in range(total):
-        time.sleep(0.1)
-        pbar.update(1)
+# password = input("Enter the password to start transferring: ")
+# if password == "secret":
+#     # code to transfer the file
+#     print("File transfer successful")
+# else:
+#     print("Incorrect password. File transfer failed.")
 
 IP = "127.0.0.1"
 PORT = 4456
@@ -30,12 +21,37 @@ FORMAT = "utf"
 CLIENT_FOLDER = "client_folder"
 
 
-
-
 def main():
-    #Starting a tcp socket 
+    #Starting a tcp socket
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((IP, PORT))
+
+    # Prompt the user to enter the username and password
+    username = input("Enter your username: ")
+    password = input("Enter your password: ")
+
+    # Send the username and password to the server
+    client.send(username.encode(FORMAT))
+    client.send(password.encode(FORMAT))
+
+    # Receive the authentication result
+    msg = client.recv(SIZE).decode(FORMAT)
+    print(f"[SERVER] {msg}")
+
+    if msg == "Authentication successful.":
+        """ The rest of the file transfer code """
+    else:
+        print("[ERROR] Authentication failed. Exiting...")
+        client.close()
+        sys.exit(0)
+
+    # This part adds the progress bar to my program
+
+    total = 100
+    with tqdm(total=total) as pbar:
+        for i in range(total):
+            time.sleep(0.1)
+            pbar.update(1)
 
     #Folder path
     path = os.path.join(CLIENT_FOLDER, "files")
@@ -81,17 +97,12 @@ def main():
         # Adding transfer history
         with open("transfer_history_log.txt", "a") as f:
             current_time = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-        
 
     #Closing the connection from the server
     msg = f"CLOSE:File transfer is completed"
     client.send(msg.encode(FORMAT))
     client.close()
 
-    
+
 if __name__ == "__main__":
     main()
-
-
-
-#Codes were taken from various youtube video, online resources, self R&D and ChatGPT
